@@ -24,3 +24,35 @@ for (const mensaje of getMensajesLuchadores(personajes)) {
 
 jaime.morir();
 tyrion.morir();
+
+const pintarPersonajes = () =>
+  personajes
+    .reduce((acumulador, personaje) => {
+      const tipoPersonaje = personaje.constructor.name;
+      const categoriaPersonaje = acumulador.find(
+        (personajeAcumulador) => tipoPersonaje === personajeAcumulador.tipo
+      );
+      if (categoriaPersonaje) {
+        categoriaPersonaje.personajes.push(personaje);
+        return acumulador;
+      } else {
+        return [
+          ...acumulador,
+          {
+            tipo: tipoPersonaje,
+            personajes: [personaje],
+          },
+        ];
+      }
+    }, [])
+    .map(({ tipo: tipoCategoria, personajes: personajesCategoria }) => ({
+      tipo: tipoCategoria,
+      personajes: personajesCategoria
+        .map((personaje) => ({
+          nombre: `${personaje.nombre} ${personaje.familia}`,
+          estado: personaje.vivo ? "vivo" : "muerto",
+          edad: personaje.edad,
+        }))
+        .sort(({ edad: edadA }, { edad: edadB }) => edadA - edadB),
+    }));
+console.log(JSON.stringify(pintarPersonajes(), null, 2));
